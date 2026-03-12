@@ -342,13 +342,41 @@ func (c *Client) GetSymbolChart(ctx context.Context, symbol string, assetClass A
 	return response.Data, nil
 }
 
+// Search performs an autosuggest search for symbols
+func (c *Client) Search(ctx context.Context, query string, limit int, includeMarketData bool) (*SearchResponse, error) {
+	if query == "" {
+		return nil, fmt.Errorf("query is required")
+	}
+
+	params := url.Values{}
+	params.Set("query", query)
+	params.Set("limit", fmt.Sprintf("%d", limit))
+	params.Set("use_cache", "true")
+	params.Set("include_market_data", fmt.Sprintf("%t", includeMarketData))
+
+	data, err := c.makeAISearchRequest(ctx, "/ai-search/external/content-search-bff/v1/autosuggest", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var response SearchResponse
+	if err := parseJSON(data, &response); err != nil {
+		return nil, err
+	}
+	if err := apiStatusError(response.Status.StatusCode, response.Status.StatusDesc); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
 // SymbolWithOption represents a symbol with its type option
 type SymbolWithOption struct {
 	Symbol string
 	Type   SymbolType
 }
 
-// String returns the formatted symbol string for API requests
+// String returns to formatted symbol string for API requests
 func (s SymbolWithOption) String() string {
 	return fmt.Sprintf("%s|%s", strings.ToLower(s.Symbol), s.Type)
 }

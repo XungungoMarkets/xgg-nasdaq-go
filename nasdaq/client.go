@@ -268,6 +268,19 @@ func (c *Client) makeWWWAPIRequest(ctx context.Context, endpoint string, params 
 	return c.doRequest(ctx, http.MethodGet, url, nil, nil)
 }
 
+// makeAISearchRequest is a helper for making AI search API requests
+func (c *Client) makeAISearchRequest(ctx context.Context, endpoint string, params url.Values) ([]byte, error) {
+	// AI search uses www.nasdaq.com base URL (use baseWWWURL without /api suffix)
+	baseURL := strings.TrimSuffix(c.baseWWWURL, "/api")
+	// Build URL with query parameters
+	url := fmt.Sprintf("%s%s", baseURL, endpoint)
+	if len(params) > 0 {
+		url += "?" + params.Encode()
+	}
+
+	return c.doRequest(ctx, http.MethodGet, url, nil, nil)
+}
+
 // parseJSON is a helper for parsing JSON responses
 func parseJSON(data []byte, v interface{}) error {
 	decoder := json.NewDecoder(bytes.NewReader(data))

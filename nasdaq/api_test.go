@@ -351,3 +351,69 @@ func TestPublishTimeParsing(t *testing.T) {
 		t.Fatalf("publish time = %v, want %v", resp.Data.NewsArticles[0].PublishTime, expected)
 	}
 }
+
+func TestSearch(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{
+			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"data": [
+				{"symbol":"NVDA","name":"NVIDIA Corporation","type":"stocks","description":"Technology sector"},
+				{"symbol":"NVDAW","name":"NVIDIA Corp","type":"stocks","description":"Technology"}
+			]
+		}`))
+	}))
+	defer server.Close()
+
+	client := NewClient(
+		WithHTTPClient(server.Client()),
+		WithBaseURLs(server.URL+"/api", server.URL),
+		WithRateLimit(1000),
+		WithMaxRetries(0),
+	)
+	ctx := context.Background()
+	resp, err := client.Search(ctx, "NVDA", 10, false)
+	if err != nil {
+		t.Fatalf("Search() error = %v", err)
+	}
+	if len(resp.Data) != 2 {
+		t.Fatalf("len(resp.Data) = %d, want 2", len(resp.Data))
+	}
+	if resp.Data[0].Symbol != "NVDA" {
+		t.Fatalf("first symbol = %s, want NVDA", resp.Data[0].Symbol)
+	}
+}
+
+func TestSearchEmptyQuery(t *testing.T) {
+	client := NewClient()
+	ctx := context.Background()
+	_, err := client.Search(ctx, "", 10, false)
+	if err == nil {
+		t.Fatal("expected error for empty query")
+	}
+}
+
+func TestSearchWithMarketData(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{
+			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"data": [{"symbol":"AAPL","name":"Apple Inc","type":"stocks","description":"Consumer Electronics"}]
+		}`))
+	}))
+	defer server.Close()
+
+	client := NewClient(
+		WithHTTPClient(server.Client()),
+		WithBaseURLs(server.URL+"/api", server.URL),
+		WithRateLimit(1000),
+		WithMaxRetries(0),
+	)
+	ctx := context.Background()
+	_, err := client.Search(ctx, "AAPL", 5, true)
+	if err != nil {
+		t.Fatalf("Search() error = %v", err)
+	}
+}

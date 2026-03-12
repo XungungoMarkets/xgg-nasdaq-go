@@ -228,6 +228,36 @@ chartData, err := client.GetSymbolChart(ctx, "AAPL", nasdaq.AssetClassStock)
 
 **Returns:** Map containing chart data with price history
 
+### Search
+Search for symbols using the autosuggest feature to find stocks, ETFs, indices, and more.
+
+```go
+searchResults, err := client.Search(ctx, "NVDA", 50, false)
+```
+
+**Parameters:**
+- `ctx`: Context for cancellation
+- `query`: Search query string (e.g., "NVDA", "Apple", "Technology")
+- `limit`: Maximum number of results to return (default: 50)
+- `includeMarketData`: Whether to include market data in results
+
+**Returns:** `SearchResponse` with array of `SearchSuggestion` objects
+
+**Example:**
+```go
+results, err := client.Search(ctx, "NVDA", 50, false)
+if err != nil {
+    log.Fatal(err)
+}
+
+for _, result := range results.Data {
+    fmt.Printf("Symbol: %s\n", result.Symbol)
+    fmt.Printf("Name: %s\n", result.Name)
+    fmt.Printf("Type: %s\n", result.Type)
+    fmt.Printf("Description: %s\n\n", result.Description)
+}
+```
+
 ## Configuration Options
 
 ```go
@@ -323,6 +353,27 @@ type NewsArticle struct {
 }
 ```
 
+### SearchSuggestion
+```go
+type SearchSuggestion struct {
+    Symbol      string // Ticker symbol
+    Name        string // Company/instrument name
+    Type        string // Type (stocks, etf, index, futures, options)
+    Description string // Description or sector
+}
+```
+
+### SearchResponse
+```go
+type SearchResponse struct {
+    Status struct {
+        StatusCode int    // HTTP status code
+        StatusDesc string // Status description
+    }
+    Data []SearchSuggestion // Array of search results
+}
+```
+
 ## Error Handling
 
 The library returns errors for various scenarios:
@@ -368,6 +419,7 @@ Based on HAR analysis, this library uses the following NASDAQ API endpoints:
 - `https://www.nasdaq.com/api/news/topic/latestnews` - Latest news
 - `https://www.nasdaq.com/api/ga/trending-symbols` - Trending symbols
 - `https://www.nasdaq.com/api/nasdaq-bell-notifications/current-events` - Bell events (IPOs, upgrades, etc.)
+- `https://www.nasdaq.com/ai-search/external/content-search-bff/v1/autosuggest` - Symbol search/autosuggest
 
 ## Important Notes
 

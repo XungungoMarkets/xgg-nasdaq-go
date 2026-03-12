@@ -149,3 +149,20 @@ const (
 	AssetClassFutures AssetClass = "futures"
 	AssetClassOptions AssetClass = "options"
 )
+
+// SearchSuggestion represents a single search result from autosuggest
+type SearchSuggestion struct {
+	Symbol      string `json:"symbol"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Description string `json:"description"`
+}
+
+// SearchResponse represents the autosuggest API response
+type SearchResponse struct {
+	Status struct {
+		StatusCode int    `json:"statusCode"`
+		StatusDesc string `json:"statusDesc"`
+	} `json:"status"`
+	Data []SearchSuggestion `json:"data"`
+}
