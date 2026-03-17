@@ -137,6 +137,8 @@ funds, err := client.GetScreenerMutualFunds(ctx, false)
 **Parameters:**
 - `tableOnly`: If true, returns only table data (faster, less data)
 
+All screener methods send `download=true` to the API, which instructs it to return the **complete table** without pagination limits. This is the equivalent of the "Download" option on the NASDAQ website.
+
 ### Get News
 Get latest news articles.
 

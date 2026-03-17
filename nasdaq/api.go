@@ -71,6 +71,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string, symbolType SymbolT
 func (c *Client) GetScreenerStocks(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
+	params.Set("download", "true")
 
 	data, err := c.makeAPIRequest(ctx, "/screener/stocks", params)
 	if err != nil {
@@ -92,6 +93,7 @@ func (c *Client) GetScreenerStocks(ctx context.Context, tableOnly bool) (*Screen
 func (c *Client) GetScreenerETFs(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
+	params.Set("download", "true")
 
 	data, err := c.makeAPIRequest(ctx, "/screener/etf", params)
 	if err != nil {
@@ -113,6 +115,7 @@ func (c *Client) GetScreenerETFs(ctx context.Context, tableOnly bool) (*Screener
 func (c *Client) GetScreenerIndices(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
+	params.Set("download", "true")
 
 	data, err := c.makeAPIRequest(ctx, "/screener/index", params)
 	if err != nil {
@@ -134,6 +137,7 @@ func (c *Client) GetScreenerIndices(ctx context.Context, tableOnly bool) (*Scree
 func (c *Client) GetScreenerMutualFunds(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
+	params.Set("download", "true")
 
 	data, err := c.makeAPIRequest(ctx, "/screener/mutualfunds", params)
 	if err != nil {
