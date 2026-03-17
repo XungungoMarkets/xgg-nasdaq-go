@@ -53,22 +53,35 @@ type QuoteRow struct {
 	Sector           string `json:"sector"`
 }
 
-// ScreenerResponse represents the screener API response
+// ScreenerResponse represents the screener API response (normalized across all endpoints).
 type ScreenerResponse struct {
 	Status struct {
 		StatusCode int    `json:"statusCode"`
 		StatusDesc string `json:"statusDesc"`
 	} `json:"status"`
-	Data struct {
-		Table struct {
-			Rows     []ScreenerRow     `json:"rows"`
-			Headings []ScreenerHeading `json:"headings"`
-		} `json:"table"`
-	} `json:"data"`
+	Rows []ScreenerRow
 }
 
-// ScreenerRow represents a row in the screener table
+// ScreenerRow represents a row in the screener table.
+// Fields are normalized across endpoints (stocks, ETFs, indices, mutual funds).
 type ScreenerRow struct {
+	Symbol           string
+	Name             string
+	LastSalePrice    string
+	NetChange        string
+	PercentageChange string
+	Volume           string
+	MarketCap        string
+	Country          string
+	IPOYear          string
+	Industry         string
+	Sector           string
+}
+
+// --- internal parse types ---
+
+// stocksDownloadRow matches the JSON shape returned by /screener/stocks?download=true
+type stocksDownloadRow struct {
 	Symbol           string `json:"symbol"`
 	Name             string `json:"name"`
 	LastSalePrice    string `json:"lastsale"`
@@ -82,11 +95,47 @@ type ScreenerRow struct {
 	Sector           string `json:"sector"`
 }
 
-// ScreenerHeading represents a column heading
-type ScreenerHeading struct {
-	Key   string `json:"key"`
-	Label string `json:"label"`
-	Type  string `json:"type"`
+func (r stocksDownloadRow) toScreenerRow() ScreenerRow {
+	return ScreenerRow{
+		Symbol: r.Symbol, Name: r.Name, LastSalePrice: r.LastSalePrice,
+		NetChange: r.NetChange, PercentageChange: r.PercentageChange,
+		Volume: r.Volume, MarketCap: r.MarketCap, Country: r.Country,
+		IPOYear: r.IPOYear, Industry: r.Industry, Sector: r.Sector,
+	}
+}
+
+// etfDownloadRow matches the JSON shape returned by /screener/etf?download=true
+type etfDownloadRow struct {
+	Symbol            string `json:"symbol"`
+	Name              string `json:"companyName"`
+	LastSalePrice     string `json:"lastSalePrice"`
+	NetChange         string `json:"netChange"`
+	PercentageChange  string `json:"percentageChange"`
+	OneYearPercentage string `json:"oneYearPercentage"`
+	DeltaIndicator    string `json:"deltaIndicator"`
+}
+
+func (r etfDownloadRow) toScreenerRow() ScreenerRow {
+	return ScreenerRow{
+		Symbol: r.Symbol, Name: r.Name, LastSalePrice: r.LastSalePrice,
+		NetChange: r.NetChange, PercentageChange: r.PercentageChange,
+	}
+}
+
+// indexMFDownloadRow matches the JSON shape returned by /screener/index and /screener/mutualfunds
+type indexMFDownloadRow struct {
+	Symbol           string `json:"symbol"`
+	Name             string `json:"companyName"`
+	LastSalePrice    string `json:"lastSalePrice"`
+	NetChange        string `json:"netChange"`
+	PercentageChange string `json:"percentageChange"`
+}
+
+func (r indexMFDownloadRow) toScreenerRow() ScreenerRow {
+	return ScreenerRow{
+		Symbol: r.Symbol, Name: r.Name, LastSalePrice: r.LastSalePrice,
+		NetChange: r.NetChange, PercentageChange: r.PercentageChange,
+	}
 }
 
 // NewsResponse represents the news API response

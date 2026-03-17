@@ -67,7 +67,8 @@ func (c *Client) GetQuote(ctx context.Context, symbol string, symbolType SymbolT
 	return &resp.Data[0], nil
 }
 
-// GetScreenerStocks retrieves stock screener data
+// GetScreenerStocks retrieves stock screener data.
+// With download=true the API returns the full table under data.rows (no pagination).
 func (c *Client) GetScreenerStocks(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
@@ -78,18 +79,32 @@ func (c *Client) GetScreenerStocks(ctx context.Context, tableOnly bool) (*Screen
 		return nil, err
 	}
 
-	var response ScreenerResponse
-	if err := parseJSON(data, &response); err != nil {
+	var raw struct {
+		Status struct {
+			StatusCode int    `json:"statusCode"`
+			StatusDesc string `json:"statusDesc"`
+		} `json:"status"`
+		Data struct {
+			Rows []stocksDownloadRow `json:"rows"`
+		} `json:"data"`
+	}
+	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(response.Status.StatusCode, response.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
 		return nil, err
 	}
 
-	return &response, nil
+	resp := &ScreenerResponse{Status: raw.Status}
+	resp.Rows = make([]ScreenerRow, len(raw.Data.Rows))
+	for i, r := range raw.Data.Rows {
+		resp.Rows[i] = r.toScreenerRow()
+	}
+	return resp, nil
 }
 
-// GetScreenerETFs retrieves ETF screener data
+// GetScreenerETFs retrieves ETF screener data.
+// With download=true the API returns the full table under data.data.rows.
 func (c *Client) GetScreenerETFs(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
@@ -100,59 +115,112 @@ func (c *Client) GetScreenerETFs(ctx context.Context, tableOnly bool) (*Screener
 		return nil, err
 	}
 
-	var response ScreenerResponse
-	if err := parseJSON(data, &response); err != nil {
+	var raw struct {
+		Status struct {
+			StatusCode int    `json:"statusCode"`
+			StatusDesc string `json:"statusDesc"`
+		} `json:"status"`
+		Data struct {
+			Data struct {
+				Rows []etfDownloadRow `json:"rows"`
+			} `json:"data"`
+		} `json:"data"`
+	}
+	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(response.Status.StatusCode, response.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
 		return nil, err
 	}
 
-	return &response, nil
+	resp := &ScreenerResponse{Status: raw.Status}
+	resp.Rows = make([]ScreenerRow, len(raw.Data.Data.Rows))
+	for i, r := range raw.Data.Data.Rows {
+		resp.Rows[i] = r.toScreenerRow()
+	}
+	return resp, nil
 }
 
-// GetScreenerIndices retrieves index screener data
+// GetScreenerIndices retrieves index screener data.
+// download=true does not bypass pagination for this endpoint; rows are under data.records.data.rows.
 func (c *Client) GetScreenerIndices(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
 	params.Set("download", "true")
+	params.Set("limit", "10000")
 
 	data, err := c.makeAPIRequest(ctx, "/screener/index", params)
 	if err != nil {
 		return nil, err
 	}
 
-	var response ScreenerResponse
-	if err := parseJSON(data, &response); err != nil {
+	var raw struct {
+		Status struct {
+			StatusCode int    `json:"statusCode"`
+			StatusDesc string `json:"statusDesc"`
+		} `json:"status"`
+		Data struct {
+			Records struct {
+				Data struct {
+					Rows []indexMFDownloadRow `json:"rows"`
+				} `json:"data"`
+			} `json:"records"`
+		} `json:"data"`
+	}
+	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(response.Status.StatusCode, response.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
 		return nil, err
 	}
 
-	return &response, nil
+	resp := &ScreenerResponse{Status: raw.Status}
+	resp.Rows = make([]ScreenerRow, len(raw.Data.Records.Data.Rows))
+	for i, r := range raw.Data.Records.Data.Rows {
+		resp.Rows[i] = r.toScreenerRow()
+	}
+	return resp, nil
 }
 
-// GetScreenerMutualFunds retrieves mutual fund screener data
+// GetScreenerMutualFunds retrieves mutual fund screener data.
+// download=true does not bypass pagination for this endpoint; rows are under data.records.data.rows.
 func (c *Client) GetScreenerMutualFunds(ctx context.Context, tableOnly bool) (*ScreenerResponse, error) {
 	params := url.Values{}
 	params.Set("tableonly", fmt.Sprintf("%t", tableOnly))
 	params.Set("download", "true")
+	params.Set("limit", "10000")
 
 	data, err := c.makeAPIRequest(ctx, "/screener/mutualfunds", params)
 	if err != nil {
 		return nil, err
 	}
 
-	var response ScreenerResponse
-	if err := parseJSON(data, &response); err != nil {
+	var raw struct {
+		Status struct {
+			StatusCode int    `json:"statusCode"`
+			StatusDesc string `json:"statusDesc"`
+		} `json:"status"`
+		Data struct {
+			Records struct {
+				Data struct {
+					Rows []indexMFDownloadRow `json:"rows"`
+				} `json:"data"`
+			} `json:"records"`
+		} `json:"data"`
+	}
+	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(response.Status.StatusCode, response.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
 		return nil, err
 	}
 
-	return &response, nil
+	resp := &ScreenerResponse{Status: raw.Status}
+	resp.Rows = make([]ScreenerRow, len(raw.Data.Records.Data.Rows))
+	for i, r := range raw.Data.Records.Data.Rows {
+		resp.Rows[i] = r.toScreenerRow()
+	}
+	return resp, nil
 }
 
 // GetNews retrieves latest news articles

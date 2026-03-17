@@ -137,7 +137,9 @@ funds, err := client.GetScreenerMutualFunds(ctx, false)
 **Parameters:**
 - `tableOnly`: If true, returns only table data (faster, less data)
 
-All screener methods send `download=true` to the API, which instructs it to return the **complete table** without pagination limits. This is the equivalent of the "Download" option on the NASDAQ website.
+All screener methods return the **complete table** — no pagination needed. Results are normalized into `resp.Rows []ScreenerRow` regardless of endpoint.
+
+> **Note:** Each endpoint returns a different JSON shape and field names. The library handles this internally and normalizes everything to `ScreenerRow`.
 
 ### Get News
 Get latest news articles.
@@ -341,7 +343,32 @@ type QuoteRow struct {
 ```
 
 ### ScreenerRow
-Similar to QuoteRow with additional screener-specific fields.
+Normalized output row across all screener endpoints. Fields not available for a given endpoint are left as empty strings.
+
+```go
+type ScreenerRow struct {
+    Symbol           string // Ticker symbol
+    Name             string // Company/fund name (mapped from companyName for ETFs/indices)
+    LastSalePrice    string // Current price
+    NetChange        string // Price change
+    PercentageChange string // Percent change
+    Volume           string // Trading volume (stocks only)
+    MarketCap        string // Market capitalization (stocks only)
+    Country          string // Country (stocks only)
+    IPOYear          string // Year of IPO (stocks only)
+    Industry         string // Industry sector (stocks only)
+    Sector           string // Market sector (stocks only)
+}
+```
+
+**Notes on endpoint differences:**
+
+| Endpoint | Full table | Shape |
+|---|---|---|
+| `/screener/stocks` | Yes (`download=true`) | `data.rows` |
+| `/screener/etf` | Yes (`download=true`) | `data.data.rows` |
+| `/screener/index` | Yes (`limit=10000`) | `data.records.data.rows` |
+| `/screener/mutualfunds` | Yes (`limit=10000`) | `data.records.data.rows` |
 
 ### NewsArticle
 ```go

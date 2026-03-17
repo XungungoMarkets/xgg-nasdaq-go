@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://api.nasdaq.com/api/screener/stocks?tableonly=false&limit=25&download=true\" -H \"accept: application/json, text/plain, */*\" -H \"accept-language: en-US,en;q=0.9\" -H \"origin: https://www.nasdaq.com\" -H \"referer: https://www.nasdaq.com/\" -H \"user-agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/145.0.0.0 Safari/537.36\")",
+      "Bash(curl -s \"https://api.nasdaq.com/api/screener/etf?tableonly=false&limit=25&download=true\" -H \"accept: application/json, text/plain, */*\" -H \"accept-language: en-US,en;q=0.9\" -H \"origin: https://www.nasdaq.com\" -H \"referer: https://www.nasdaq.com/\" -H \"user-agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/145.0.0.0 Safari/537.36\")",
+      "Bash(curl -s \"https://api.nasdaq.com/api/screener/index?tableonly=false&limit=25&download=true\" -H \"accept: application/json, text/plain, */*\" -H \"accept-language: en-US,en;q=0.9\" -H \"origin: https://www.nasdaq.com\" -H \"referer: https://www.nasdaq.com/\" -H \"user-agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/145.0.0.0 Safari/537.36\")",
+      "Bash(curl -s \"https://api.nasdaq.com/api/screener/mutualfunds?tableonly=false&limit=25&download=true\" -H \"accept: application/json, text/plain, */*\" -H \"accept-language: en-US,en;q=0.9\" -H \"origin: https://www.nasdaq.com\" -H \"referer: https://www.nasdaq.com/\" -H \"user-agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/145.0.0.0 Safari/537.36\")",
+      "Bash(go build:*)",
+      "Bash(go test:*)"
+    ]
+  }
+}
