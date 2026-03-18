@@ -52,7 +52,7 @@ func TestGetWatchlistWithMultipleSymbols(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [
 				{"symbol":"AAPL","name":"Apple","lastsale":"$150","netchange":"+1","pctchange":"+0.6%","volume":"100","marketcap":"1"},
 				{"symbol":"MSFT","name":"Microsoft","lastsale":"$300","netchange":"+2","pctchange":"+0.7%","volume":"200","marketcap":"2"}
@@ -86,7 +86,7 @@ func TestGetWatchlistIncludesTypeWhenConfigured(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [
 				{"symbol":"AAPL","name":"Apple","lastsale":"$150","netchange":"+1","pctchange":"+0.6%","volume":"100","marketcap":"1"}
 			]
@@ -115,7 +115,7 @@ func TestGetWatchlistReturnsErrorOnAPINon200Status(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 500, "statusDesc": "Internal Error"},
+			"status": {"rCode": 500},
 			"data": []
 		}`))
 	}))
@@ -138,7 +138,7 @@ func TestGetQuote(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [
 				{"symbol":"GOOGL","name":"Alphabet","lastsale":"$120","netchange":"+2","pctchange":"+1.6%","volume":"300","marketcap":"3"}
 			]
@@ -173,7 +173,7 @@ func TestGetScreenerStocksTableOnlyFalse(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		// Real shape returned by /screener/stocks?download=true
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {
 				"asOf": null,
 				"headers": {"symbol":"Symbol","name":"Name","lastsale":"Last Sale"},
@@ -215,7 +215,7 @@ func TestGetScreenerStocksTableOnlyTrue(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {
 				"rows": [{"symbol":"NVDA","name":"NVIDIA","lastsale":"$500.00","netchange":"5.00","pctchange":"1.00%","volume":"10000000","marketcap":"1000000000000","country":"United States","ipoyear":"1999","industry":"Semiconductors","sector":"Technology"}]
 			}
@@ -239,7 +239,7 @@ func TestGetScreenerStocksTableOnlyTrue(t *testing.T) {
 func TestGetScreenerStocksAPIError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": {"statusCode": 500, "statusDesc": "Internal Error"}, "data": {"rows": []}}`))
+		w.Write([]byte(`{"status": {"rCode": 500}, "data": {"rows": []}}`))
 	}))
 	defer server.Close()
 
@@ -266,7 +266,7 @@ func TestGetScreenerETFsTableOnlyFalse(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		// Real shape returned by /screener/etf?download=true
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {
 				"dataAsOf": "3/16/2026 8:00:00 PM",
 				"data": {
@@ -313,7 +313,7 @@ func TestGetScreenerETFsTableOnlyTrue(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {"data": {"rows": [{"symbol":"IVV","companyName":"iShares Core S&P 500 ETF","lastSalePrice":"$480.00","netChange":"1.50","percentageChange":"0.31%","oneYearPercentage":"11.00%","deltaIndicator":"up"}]}}
 		}`))
 	}))
@@ -335,7 +335,7 @@ func TestGetScreenerETFsTableOnlyTrue(t *testing.T) {
 func TestGetScreenerETFsAPIError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": {"statusCode": 500, "statusDesc": "Error"}, "data": {"data": {"rows": []}}}`))
+		w.Write([]byte(`{"status": {"rCode": 500}, "data": {"data": {"rows": []}}}`))
 	}))
 	defer server.Close()
 
@@ -365,7 +365,7 @@ func TestGetScreenerIndicesTableOnlyFalse(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		// Real shape returned by /screener/index?download=true
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {
 				"filters": [],
 				"records": {
@@ -412,7 +412,7 @@ func TestGetScreenerIndicesTableOnlyTrue(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {"records": {"data": {"rows": [{"symbol":"SPX","companyName":"S&P 500 Index","lastSalePrice":"$5000.00","netChange":"10.00","percentageChange":"0.20%"}]}}}
 		}`))
 	}))
@@ -434,7 +434,7 @@ func TestGetScreenerIndicesTableOnlyTrue(t *testing.T) {
 func TestGetScreenerIndicesAPIError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": {"statusCode": 500, "statusDesc": "Error"}, "data": {"records": {"data": {"rows": []}}}}`))
+		w.Write([]byte(`{"status": {"rCode": 500}, "data": {"records": {"data": {"rows": []}}}}`))
 	}))
 	defer server.Close()
 
@@ -464,7 +464,7 @@ func TestGetScreenerMutualFundsTableOnlyFalse(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		// Same shape as /screener/index?download=true
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {
 				"filters": [],
 				"records": {
@@ -511,7 +511,7 @@ func TestGetScreenerMutualFundsTableOnlyTrue(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {"records": {"data": {"rows": [{"symbol":"VTSAX","companyName":"Vanguard Total Stock Market Index Fund Admiral","lastSalePrice":"$110.00","netChange":"0.30","percentageChange":"0.27%"}]}}}
 		}`))
 	}))
@@ -533,7 +533,7 @@ func TestGetScreenerMutualFundsTableOnlyTrue(t *testing.T) {
 func TestGetScreenerMutualFundsAPIError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": {"statusCode": 500, "statusDesc": "Error"}, "data": {"records": {"data": {"rows": []}}}}`))
+		w.Write([]byte(`{"status": {"rCode": 500}, "data": {"records": {"data": {"rows": []}}}}`))
 	}))
 	defer server.Close()
 
@@ -554,7 +554,7 @@ func TestGetNews(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {"rows":[{"title":"Test","url":"https://example.com","publishTime":"2025-01-01T00:00:00Z"}]}
 		}`))
 	}))
@@ -581,7 +581,7 @@ func TestGetTrendingSymbols(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [{"symbol":"AAPL","name":"Apple","lastsale":"$150","netchange":"+5","pctchange":"+3%","volume":"100"}]
 		}`))
 	}))
@@ -609,7 +609,7 @@ func TestGetBasicQuotesWithMultipleSymbols(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [{"symbol":"AAPL"},{"symbol":"MSFT"}]
 		}`))
 	}))
@@ -705,7 +705,7 @@ func TestPublishTimeParsing(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": {"rows":[{"title":"Test","url":"https://example.com","publishTime":"2026-01-01T12:30:00Z"}]}
 		}`))
 	}))
@@ -728,7 +728,7 @@ func TestSearch(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [
 				{"symbol":"NVDA","name":"NVIDIA Corporation","type":"stocks","description":"Technology sector"},
 				{"symbol":"NVDAW","name":"NVIDIA Corp","type":"stocks","description":"Technology"}
@@ -770,7 +770,7 @@ func TestSearchWithMarketData(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": {"statusCode": 200, "statusDesc": "OK"},
+			"status": {"rCode": 200},
 			"data": [{"symbol":"AAPL","name":"Apple Inc","type":"stocks","description":"Consumer Electronics"}]
 		}`))
 	}))

@@ -81,8 +81,8 @@ func (c *Client) GetScreenerStocks(ctx context.Context, tableOnly bool) (*Screen
 
 	var raw struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			RCode        int    `json:"rCode"`
+			BCodeMessage string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data struct {
 			Rows []stocksDownloadRow `json:"rows"`
@@ -91,11 +91,12 @@ func (c *Client) GetScreenerStocks(ctx context.Context, tableOnly bool) (*Screen
 	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.RCode, raw.Status.BCodeMessage); err != nil {
 		return nil, err
 	}
 
-	resp := &ScreenerResponse{Status: raw.Status}
+	resp := &ScreenerResponse{}
+	resp.Status.StatusCode = raw.Status.RCode
 	resp.Rows = make([]ScreenerRow, len(raw.Data.Rows))
 	for i, r := range raw.Data.Rows {
 		resp.Rows[i] = r.toScreenerRow()
@@ -117,8 +118,8 @@ func (c *Client) GetScreenerETFs(ctx context.Context, tableOnly bool) (*Screener
 
 	var raw struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			RCode        int    `json:"rCode"`
+			BCodeMessage string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data struct {
 			Data struct {
@@ -129,11 +130,12 @@ func (c *Client) GetScreenerETFs(ctx context.Context, tableOnly bool) (*Screener
 	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.RCode, raw.Status.BCodeMessage); err != nil {
 		return nil, err
 	}
 
-	resp := &ScreenerResponse{Status: raw.Status}
+	resp := &ScreenerResponse{}
+	resp.Status.StatusCode = raw.Status.RCode
 	resp.Rows = make([]ScreenerRow, len(raw.Data.Data.Rows))
 	for i, r := range raw.Data.Data.Rows {
 		resp.Rows[i] = r.toScreenerRow()
@@ -156,8 +158,8 @@ func (c *Client) GetScreenerIndices(ctx context.Context, tableOnly bool) (*Scree
 
 	var raw struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			RCode        int    `json:"rCode"`
+			BCodeMessage string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data struct {
 			Records struct {
@@ -170,11 +172,12 @@ func (c *Client) GetScreenerIndices(ctx context.Context, tableOnly bool) (*Scree
 	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.RCode, raw.Status.BCodeMessage); err != nil {
 		return nil, err
 	}
 
-	resp := &ScreenerResponse{Status: raw.Status}
+	resp := &ScreenerResponse{}
+	resp.Status.StatusCode = raw.Status.RCode
 	resp.Rows = make([]ScreenerRow, len(raw.Data.Records.Data.Rows))
 	for i, r := range raw.Data.Records.Data.Rows {
 		resp.Rows[i] = r.toScreenerRow()
@@ -197,8 +200,8 @@ func (c *Client) GetScreenerMutualFunds(ctx context.Context, tableOnly bool) (*S
 
 	var raw struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			RCode        int    `json:"rCode"`
+			BCodeMessage string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data struct {
 			Records struct {
@@ -211,11 +214,12 @@ func (c *Client) GetScreenerMutualFunds(ctx context.Context, tableOnly bool) (*S
 	if err := parseJSON(data, &raw); err != nil {
 		return nil, err
 	}
-	if err := apiStatusError(raw.Status.StatusCode, raw.Status.StatusDesc); err != nil {
+	if err := apiStatusError(raw.Status.RCode, raw.Status.BCodeMessage); err != nil {
 		return nil, err
 	}
 
-	resp := &ScreenerResponse{Status: raw.Status}
+	resp := &ScreenerResponse{}
+	resp.Status.StatusCode = raw.Status.RCode
 	resp.Rows = make([]ScreenerRow, len(raw.Data.Records.Data.Rows))
 	for i, r := range raw.Data.Records.Data.Rows {
 		resp.Rows[i] = r.toScreenerRow()
@@ -276,8 +280,8 @@ func (c *Client) GetBellNotifications(ctx context.Context) ([]map[string]interfa
 
 	var response struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			StatusCode int    `json:"rCode"`
+			StatusDesc string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data []map[string]interface{} `json:"data"`
 	}
@@ -302,8 +306,8 @@ func (c *Client) GetMarketInfo(ctx context.Context) (map[string]interface{}, err
 
 	var response struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			StatusCode int    `json:"rCode"`
+			StatusDesc string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data map[string]interface{} `json:"data"`
 	}
@@ -332,8 +336,8 @@ func (c *Client) GetSymbolInfo(ctx context.Context, symbol string, assetClass As
 
 	var response struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			StatusCode int    `json:"rCode"`
+			StatusDesc string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data map[string]interface{} `json:"data"`
 	}
@@ -367,8 +371,8 @@ func (c *Client) GetBasicQuotes(ctx context.Context, symbols []SymbolWithOption)
 
 	var response struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			StatusCode int    `json:"rCode"`
+			StatusDesc string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data []map[string]interface{} `json:"data"`
 	}
@@ -397,8 +401,8 @@ func (c *Client) GetSymbolChart(ctx context.Context, symbol string, assetClass A
 
 	var response struct {
 		Status struct {
-			StatusCode int    `json:"statusCode"`
-			StatusDesc string `json:"statusDesc"`
+			StatusCode int    `json:"rCode"`
+			StatusDesc string `json:"bCodeMessage"`
 		} `json:"status"`
 		Data map[string]interface{} `json:"data"`
 	}

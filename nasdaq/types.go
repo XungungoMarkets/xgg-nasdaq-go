@@ -32,8 +32,8 @@ type Quote struct {
 // WatchlistResponse represents the watchlist API response
 type WatchlistResponse struct {
 	Status struct {
-		StatusCode int    `json:"statusCode"`
-		StatusDesc string `json:"statusDesc"`
+		StatusCode int    `json:"rCode"`
+		StatusDesc string `json:"bCodeMessage"`
 	} `json:"status"`
 	Data []QuoteRow `json:"data"`
 }
@@ -88,7 +88,7 @@ type stocksDownloadRow struct {
 	NetChange        string `json:"netchange"`
 	PercentageChange string `json:"pctchange"`
 	Volume           string `json:"volume"`
-	MarketCap        string `json:"marketcap"`
+	MarketCap        string `json:"marketCap"`
 	Country          string `json:"country"`
 	IPOYear          string `json:"ipoyear"`
 	Industry         string `json:"industry"`
@@ -141,8 +141,8 @@ func (r indexMFDownloadRow) toScreenerRow() ScreenerRow {
 // NewsResponse represents the news API response
 type NewsResponse struct {
 	Status struct {
-		StatusCode int    `json:"statusCode"`
-		StatusDesc string `json:"statusDesc"`
+		StatusCode int    `json:"rCode"`
+		StatusDesc string `json:"bCodeMessage"`
 	} `json:"status"`
 	Data struct {
 		NewsArticles []NewsArticle `json:"rows"`
@@ -162,8 +162,8 @@ type NewsArticle struct {
 // TrendingSymbolsResponse represents the trending symbols API response
 type TrendingSymbolsResponse struct {
 	Status struct {
-		StatusCode int    `json:"statusCode"`
-		StatusDesc string `json:"statusDesc"`
+		StatusCode int    `json:"rCode"`
+		StatusDesc string `json:"bCodeMessage"`
 	} `json:"status"`
 	Data []TrendingSymbol `json:"data"`
 }
@@ -210,8 +210,8 @@ type SearchSuggestion struct {
 // SearchResponse represents the autosuggest API response
 type SearchResponse struct {
 	Status struct {
-		StatusCode int    `json:"statusCode"`
-		StatusDesc string `json:"statusDesc"`
+		StatusCode int    `json:"rCode"`
+		StatusDesc string `json:"bCodeMessage"`
 	} `json:"status"`
 	Data []SearchSuggestion `json:"data"`
 }
