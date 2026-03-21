@@ -51,6 +51,25 @@ type QuoteRow struct {
 	IPOYear          string `json:"ipoyear"`
 	Industry         string `json:"industry"`
 	Sector           string `json:"sector"`
+
+	// Extended session fields (populated when available)
+	MarketStatus          string `json:"marketStatus"`
+	DeltaIndicator        string `json:"deltaIndicator"`
+	AfterHoursPrice       string `json:"afterHoursLastSalePrice"`
+	AfterHoursChange      string `json:"afterHoursLastSaleChange"`
+	AfterHoursChangePct   string `json:"afterHoursLastSaleChangePercent"`
+	PreMarketPrice        string `json:"preMarketLastSalePrice"`
+	PreMarketChange       string `json:"preMarketLastSaleChange"`
+	PreMarketChangePct    string `json:"preMarketLastSaleChangePercent"`
+}
+
+// ExtendedTradingData holds pre/after-hours price data from the extended-trading endpoint.
+type ExtendedTradingData struct {
+	Symbol    string `json:"symbol"`
+	Price     string `json:"lastSalePrice"`
+	Change    string `json:"change"`
+	ChangePct string `json:"changePct"`
+	Status    string `json:"status"` // e.g. "PRE", "POST", "CLOSED"
 }
 
 // ScreenerResponse represents the screener API response (normalized across all endpoints).

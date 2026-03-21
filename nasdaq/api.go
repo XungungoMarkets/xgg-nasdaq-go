@@ -418,6 +418,50 @@ func (c *Client) GetSymbolChart(ctx context.Context, symbol string, assetClass A
 	return response.Data, nil
 }
 
+// GetExtendedTrading retrieves pre/after-hours trading data for a single stock symbol.
+// It calls /api/quote/{symbol}/extended-trading?assetclass=stocks.
+func (c *Client) GetExtendedTrading(ctx context.Context, symbol string) (*ExtendedTradingData, error) {
+	params := url.Values{}
+	params.Set("assetclass", "stocks")
+
+	endpoint := fmt.Sprintf("/quote/%s/extended-trading", strings.ToUpper(symbol))
+	data, err := c.makeAPIRequest(ctx, endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+
+	var raw struct {
+		Status struct {
+			RCode        int    `json:"rCode"`
+			BCodeMessage string `json:"bCodeMessage"`
+		} `json:"status"`
+		Data struct {
+			Summary struct {
+				Symbol    string `json:"symbol"`
+				Price     string `json:"lastSalePrice"`
+				Change    string `json:"change"`
+				ChangePct string `json:"changePct"`
+				Status    string `json:"status"`
+			} `json:"summary"`
+		} `json:"data"`
+	}
+	if err := parseJSON(data, &raw); err != nil {
+		return nil, err
+	}
+	if err := apiStatusError(raw.Status.RCode, raw.Status.BCodeMessage); err != nil {
+		return nil, err
+	}
+
+	s := raw.Data.Summary
+	return &ExtendedTradingData{
+		Symbol:    s.Symbol,
+		Price:     s.Price,
+		Change:    s.Change,
+		ChangePct: s.ChangePct,
+		Status:    s.Status,
+	}, nil
+}
+
 // Search performs an autosuggest search for symbols
 func (c *Client) Search(ctx context.Context, query string, limit int, includeMarketData bool) (*SearchResponse, error) {
 	if query == "" {
