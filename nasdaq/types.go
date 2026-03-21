@@ -72,6 +72,34 @@ type ExtendedTradingData struct {
 	Status    string `json:"status"` // e.g. "PRE", "POST", "CLOSED"
 }
 
+// QuoteSessionData holds price data for one trading session (regular or extended).
+// Used in both PrimaryData and SecondaryData of QuoteInfo.
+type QuoteSessionData struct {
+	LastSalePrice      string `json:"lastSalePrice"`
+	NetChange          string `json:"netChange"`
+	PercentageChange   string `json:"percentageChange"`
+	DeltaIndicator     string `json:"deltaIndicator"` // "up" | "down"
+	LastTradeTimestamp string `json:"lastTradeTimestamp"`
+	IsRealTime         bool   `json:"isRealTime"`
+	Volume             string `json:"volume"`
+}
+
+// QuoteInfo holds the typed response from /api/quote/{symbol}/info.
+type QuoteInfo struct {
+	Symbol         string            `json:"symbol"`
+	CompanyName    string            `json:"companyName"`
+	StockType      string            `json:"stockType"`
+	Exchange       string            `json:"exchange"`
+	IsNasdaqListed bool              `json:"isNasdaqListed"`
+	IsNasdaq100    bool              `json:"isNasdaq100"`
+	AssetClass     string            `json:"assetClass"`
+	// MarketStatus values: "Open", "Closed", "Pre-Market", "After-Hours"
+	MarketStatus  string            `json:"marketStatus"`
+	PrimaryData   QuoteSessionData  `json:"primaryData"`
+	// SecondaryData is populated during pre/after-hours sessions; nil otherwise.
+	SecondaryData *QuoteSessionData `json:"secondaryData"`
+}
+
 // ScreenerResponse represents the screener API response (normalized across all endpoints).
 type ScreenerResponse struct {
 	Status struct {

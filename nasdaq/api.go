@@ -323,12 +323,13 @@ func (c *Client) GetMarketInfo(ctx context.Context) (map[string]interface{}, err
 	return response.Data, nil
 }
 
-// GetSymbolInfo retrieves detailed information about a specific symbol
-func (c *Client) GetSymbolInfo(ctx context.Context, symbol string, assetClass AssetClass) (map[string]interface{}, error) {
+// GetQuoteInfo retrieves detailed quote information for a single symbol,
+// including market status and secondary (pre/after-hours) session data.
+func (c *Client) GetQuoteInfo(ctx context.Context, symbol string, assetClass AssetClass) (*QuoteInfo, error) {
 	params := url.Values{}
 	params.Set("assetclass", string(assetClass))
 
-	endpoint := fmt.Sprintf("/quote/%s/info", symbol)
+	endpoint := fmt.Sprintf("/quote/%s/info", strings.ToUpper(symbol))
 	data, err := c.makeAPIRequest(ctx, endpoint, params)
 	if err != nil {
 		return nil, err
@@ -339,7 +340,7 @@ func (c *Client) GetSymbolInfo(ctx context.Context, symbol string, assetClass As
 			StatusCode int    `json:"rCode"`
 			StatusDesc string `json:"bCodeMessage"`
 		} `json:"status"`
-		Data map[string]interface{} `json:"data"`
+		Data QuoteInfo `json:"data"`
 	}
 
 	if err := parseJSON(data, &response); err != nil {
@@ -350,7 +351,7 @@ func (c *Client) GetSymbolInfo(ctx context.Context, symbol string, assetClass As
 		return nil, err
 	}
 
-	return response.Data, nil
+	return &response.Data, nil
 }
 
 // GetBasicQuotes retrieves basic quote data for multiple symbols
